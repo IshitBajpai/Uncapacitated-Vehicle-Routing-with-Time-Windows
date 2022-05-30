@@ -5,53 +5,6 @@ from ortools.linear_solver import pywraplp
 from ortools.linear_solver import pywraplp
 from datetime import datetime
 
-
-
-
-def LinearProgrammingExample():
-    solver = pywraplp.Solver.CreateSolver('GLOP')
-    
-    s_x1a = solver.NumVar(0, 1, 's_x1a')
-    s_x1b = solver.NumVar(0, 1, 's_x1b')
-    s_x2a = solver.NumVar(0, 1, 's_x2a')
-    x1a_t = solver.NumVar(0, 1, 'x1a_t')
-    x1b_t = solver.NumVar(0, 1, 'x1b_t')
-    x2a_t = solver.NumVar(0, 1, 'x2a_t')
-    x1a_x2a = solver.NumVar(0, 1, 'x1a_x2a')
-    
-
-    print('Number of variables =', solver.NumVariables())
-
-    # constraints on incoming edges for customers
-    solver.Add( s_x1a + s_x1b == 1 ) 
-    solver.Add( s_x2a + x1a_x2a == 1)
-
-    # constraints on outgoing edges for customers
-    solver.Add(x1a_t+x1b_t+x1a_x2a == 1)
-    solver.Add(x2a_t == 1)
-
-    #constraints in capacities of edges
-    #Done above ig
-
-    print('Number of constraints =', solver.NumConstraints())
-
-    solver.Minimize(s_x1a+s_x1b+s_x2a)
-
-    status = solver.Solve()
-
-    if status == pywraplp.Solver.OPTIMAL:
-        print('Solution:')
-        print('Objective value =', solver.Objective().Value())
-        print('s_x1a =', s_x1a.solution_value())
-        print('s_x1b =', s_x1b.solution_value())
-        print('x1a_x2a =',  x1a_x2a.solution_value())
-    else:
-        print('The problem does not have an optimal solution.')
-
-    print('\nAdvanced usage:')
-    print('Problem solved in %f milliseconds' % solver.wall_time())
-    print('Problem solved in %d iterations' % solver.iterations())
-
 def addTime(s, n): #O(1)
       h, m = map(int, s[:-2].split(':'))
       h %= 12

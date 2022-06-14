@@ -71,44 +71,6 @@ def getNodesandCustomer(nodeCount,variables,x,edges,discreteTimeWindows,vehicleR
         print()
 
 
-
-
-
-
-    
-    # for i in range(0,vehicleReq):
-    #     path = []
-    #     prev = -2
-    #     for j in range(0,len(goodVariables)):
-    #         if(visited[j]==0 and prev == -2):
-    #             prev = edges['x[%i]' % goodVariables[j]][1]
-    #             visited[j] = 1
-    #             path.append(edges['x[%i]' % goodVariables[j]][0])
-    #         if(visited[j]==0 and edges['x[%i]' % goodVariables[j]][0] == prev):
-    #             visited[j] = 1
-    #             prev = edges['x[%i]' % goodVariables[j]][1]
-    #             path.append(edges[ 'x[%i]' % goodVariables[j]][0])
-    #         if(prev== -1):
-    #             path.append(-1)
-    #             break
-    #     cust = []
-    #     time = []
-    #     for i in range(1,len(path)-1):
-    #         for j in range(0,len(nodeCount)):
-    #             for k in range(0,len(nodeCount[j])):
-    #                 if(path[i] == nodeCount[j][k]):
-    #                     cust.append(j)
-    #                     time.append(discreteTimeWindows[j][k])
-    #                     break
-                    
-    #     for i in range(0,len(cust)):
-    #         print("Customer:",cust[i]," Time:",time[i])
-
-    #     print(path)
-
-    
-            
-            
                  
                
 
@@ -116,10 +78,10 @@ def getNodesandCustomer(nodeCount,variables,x,edges,discreteTimeWindows,vehicleR
 def main():
     customers = 10
 
-    timeWindows = [] 
+    timeWindows = []
     for i in range(0,customers):
-        st = random.randint(1,50)*10
-        et = random.randint(1,20)*10 + st
+        st = random.randint(1,2)*10
+        et = random.randint(1,3)*10 + st
         tw = [st,et]
         timeWindows.append(tw)
 
@@ -128,7 +90,7 @@ def main():
 
     discreteTimeWindows = []
     for i in timeWindows:
-        discreteTimeWindows.append(discreteTime(i,5))
+        discreteTimeWindows.append(discreteTime(i,10))
     
     print("discreteTimeWindows",discreteTimeWindows)
     print()
@@ -145,8 +107,8 @@ def main():
                 timeMatrix[i][j] = random.randint(1,10)*10
                 timeMatrix[j][i] = timeMatrix[i][j]
 
-    # print("timeMatrix",timeMatrix)
-    # print()
+    print("timeMatrix",timeMatrix)
+    print()
 
     count = 0
     nodeCount =[]  # assigns a number to node using count and stores its value
@@ -158,14 +120,10 @@ def main():
             count+=1
         nodeCount.append(c)
 
-    # print("Node Count b4 s",nodeCount)
-    # print()
+    print("Node Count ",nodeCount)
+    print()
 
-    with open('timeNodes.txt','w') as f:
-        f.write("Time \n")
-        f.write(str(timeMatrix))
-        f.write("\n Nodes \n")
-        f.write(str(nodeCount))
+   
 
     
     edgeFlows = {}
@@ -176,39 +134,102 @@ def main():
     edgesList.append([]) # for s
     solver = pywraplp.Solver.CreateSolver('GLOP')
 
-    # out of s
+
+
+    ### GRAPH CONSTRUCTION
+
+    # out of s to starting of each customer
     e =[]
     for i in range(0,len(nodeCount)):
-        for j in range(0,len(nodeCount[i])):
-            e.append(edgeNumber)
             x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
-            edges['x[%i]' % edgeNumber] = (0,nodeCount[i][j])
-            edgeFlows[edgeNumber] = (0,nodeCount[i][j])
-            edgeNumber+=1
+            edges['x[%i]' % edgeNumber] = (0,nodeCount[i][0])
+            edgeFlows[edgeNumber] = (0,nodeCount[i][0])
+            e.append(edgeNumber)
+            edgeNumber+=1  
     edgesList[0]=e
 
-    for i in range(0,len(discreteTimeWindows)):
-        for j in range(0,len(discreteTimeWindows[i])):    # j th node
-            u = nodeCount[i][j]
-            utime = discreteTimeWindows[i][j]
-            e = []  # stores edges reachable from u
-            for k in range(0,len(discreteTimeWindows)):
-                for l in range(len(discreteTimeWindows[k])-1,-1,-1): # l th node
-                    v = nodeCount[k][l]
-                    vtime = discreteTimeWindows[k][l]
-                    # print(utime,vtime)
-                    # # print('time from',u,'to',v,'is',timeMatrix[i][k])
-                    # print()
-                    if(i!=k and utime+timeMatrix[i][k]<=vtime):
-                       
-                        x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
-                        edges['x[%i]' % edgeNumber] = (u,v) # u -> v reachable
-                        edgeFlows[edgeNumber] = (u,v)
-                        e.append(edgeNumber)
-                        edgeNumber += 1
-                    elif (utime+timeMatrix[i][k]>vtime):
-                        break
+   
+    for i in range(0,len(nodeCount)):
+        for j in range(0,len(nodeCount[i])-1):
+            e=[]
+            x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
+            edges['x[%i]' % edgeNumber] = (nodeCount[i][j],nodeCount[i][j+1])
+            edgeFlows[edgeNumber] = (nodeCount[i][j],nodeCount[i][j+1])
+            #add edge number in edge list 
+            e.append(edgeNumber)
             edgesList.append(e)
+            edgeNumber+=1
+        edgesList.append([])
+    print("Edges List:",edgesList)
+
+    i = 0
+    while(i<len(discreteTimeWindows)):
+            tu = nodeCount[i][-1]
+            start_utime = discreteTimeWindows[i][0]
+            end_utime = discreteTimeWindows[i][-1]
+            # stores edges reachable from u
+            for k in range(0,len(discreteTimeWindows)):
+                    sv = nodeCount[k][0]
+
+                    start_vtime = discreteTimeWindows[k][0]
+                    end_vtime =  discreteTimeWindows[k][-1]
+
+                    if(i!=k and start_utime + timeMatrix[i][k] > end_vtime):
+                        break #not reachable
+
+                    elif(i!=k and start_vtime > end_utime + timeMatrix[i][k]):
+                        # edge bw (u,tu) -> (v,sv)
+                        e = []
+                        x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
+                        edges['x[%i]' % edgeNumber] = (tu,sv) # u -> v reachable
+                        edgeFlows[edgeNumber] = (tu,sv)
+                        print(tu,"->",sv)
+                        e.append(edgeNumber)
+                        edgesList[tu].extend(e)
+                        edgeNumber += 1
+                        break
+
+
+                    elif(i!=k and start_vtime == end_utime + timeMatrix[i][k]):
+                        e = []
+                        x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
+                        edges['x[%i]' % edgeNumber] = (tu,sv) # u -> v reachable
+                        print(tu,"->",sv)
+                        edgeFlows[edgeNumber] = (tu,sv)
+                        e.append(edgeNumber)
+                        edgesList[tu].extend(e)
+                        edgeNumber += 1
+                        break
+
+                    elif (i!=k and start_vtime < end_utime + timeMatrix[i][k]):
+                        
+                        firstReachableNode_index = 0 # first such that node >= sv
+                        for j in range(0,len(discreteTimeWindows[i])):
+                            if(timeMatrix[i][k] + discreteTimeWindows[i][j] >= start_vtime):
+                                firstReachableNode_index = j
+                                break
+                        # now starting from firstReachableNode make edges until feasible
+                        for l in range(firstReachableNode_index,len(discreteTimeWindows[i])):
+                            e = []
+                            reachingTime = discreteTimeWindows[i][l]+timeMatrix[i][k] 
+                            for r in range(0,len(discreteTimeWindows[k])):
+                                if(discreteTimeWindows[k][r] >= reachingTime):
+                                    print(edgesList[nodeCount[i][l]])
+                                    print(nodeCount[i][l],"->",nodeCount[k][r])
+                                    # edge bw these two
+                                    x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
+                                    edges['x[%i]' % edgeNumber] = (nodeCount[i][l],nodeCount[k][r]) # u -> v reachable
+                                    edgeFlows[edgeNumber] = (nodeCount[i][l],nodeCount[k][r])
+
+                                    e.append(edgeNumber)
+                                    edgesList[nodeCount[i][l]].extend(e)
+                                    print("hdhdh",edgesList[nodeCount[i][l]])
+                                    edgeNumber += 1
+                                    break
+                        break
+           
+            i+=1
+
     
     print('edge list b4 s t',edgesList)
     print()
@@ -216,16 +237,22 @@ def main():
     # into t (except s)
     e=[]
     for i in range(0,len(nodeCount)):
-        for j in range(0,len(nodeCount[i])):
             x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
-            edges['x[%i]' % edgeNumber] = (nodeCount[i][j],-1)
-            edgeFlows[edgeNumber] = (nodeCount[i][j],-1)
+            edges['x[%i]' % edgeNumber] = (nodeCount[i][-1],-1)
+            edgeFlows[edgeNumber] = (nodeCount[i][-1],-1)
             #add edge number in edge list 
-            edgesList[nodeCount[i][j]].append(edgeNumber)
+            edgesList[nodeCount[i][-1]].append(edgeNumber)
             edgeNumber+=1
     edgesList.append([])
+
     print("Node Count after s and t:",nodeCount)
     print()
+
+
+
+
+
+    # GRAPH Construction OVER
     
 
     offset = edgeNumber   # if I add it to  0 edge i'll get flow for 1 at the same edge  , add to 1 customer 2 customer 
@@ -236,7 +263,7 @@ def main():
         flows[i] = edgeFlows.copy()
         keys = edgeFlows.keys()
         for j in keys: # stores key values of edgeflows i.e 0 1 2
-            x[edgeNumber] = solver.NumVar(0,1,'x[%i]' % edgeNumber) # making variable
+            x[edgeNumber] = solver.NumVar(0,1,'x[%i]' % edgeNumber) # all x[] > offset are for flow variables
             # remove key and replace it by edge
             t = flows[i].pop(j)
             flows[i][edgeNumber] = t 
@@ -334,7 +361,6 @@ def main():
     # print(data['bounds']) 
 
     # constraints for incoming = 1
-
     print("offset",offset)
     # print("flows",flows)
     
@@ -366,6 +392,17 @@ def main():
             data['bounds'].append('1l')
 
 
+    # print("data[constraints] \n", data['constraint_coeffs'])
+    # print("bounds\n",data['bounds'])
+    c=[]
+    for i in range(len(data['constraint_coeffs'][0])):
+        c.append(i%10)
+    print(c)
+    for i in range(len(data['constraint_coeffs'])):
+        print(data['constraint_coeffs'][i],"=",data['bounds'][i])
+        
+
+
     # # flow conservation for node
     for c in range(customers):
         addn = offset*c+offset
@@ -381,7 +418,6 @@ def main():
                     contraint[e+addn] = -1
                 data['constraint_coeffs'].append(contraint)
                 data['bounds'].append('0u')
-
 
     # objective function minimize outgoing flow from 0 node
     objectiveCoefficients = [0] * (edgeNumber)

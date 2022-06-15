@@ -20,61 +20,6 @@ def discreteTime(timeWindow, intervalSize):   # O(lenghtOftimeWindow/size)
         currtime = currtime+intervalSize
     return tw
 
-
-def getNodesandCustomer(nodeCount, variables, x, edges, discreteTimeWindows, vehicleReq, timeWindows):
-    goodVariables = []
-    visited = []
-    goodEdges = []
-
-    for j in range(variables):
-        if(x[j].solution_value() > 0 and j < len(edges)):
-            goodVariables.append(j)
-
-    print("good var:", goodVariables)
-    print()
-
-    for i in range(0, len(goodVariables)):
-        visited.append(0)
-        goodEdges.append(edges['x[%i]' % goodVariables[i]])
-
-    print("good edges :", goodEdges)
-    print(timeWindows)
-    for i in range(0, vehicleReq):
-        nextFirstNode = 0
-        flag = 0
-        NodesInPath = []
-        while(nextFirstNode != -1):
-            for j in range(0, len(goodEdges)):
-                if(visited[j] == 0 and flag == 0):
-                    nextFirstNode = goodEdges[j][-1]
-                    NodesInPath.append(goodEdges[j][0])
-                    visited[j] = 1
-                    flag = 1
-                elif(nextFirstNode == -1):
-                    NodesInPath.append(-1)
-                    break
-                elif(visited[j] == 0 and goodEdges[j][0] == nextFirstNode):
-                    nextFirstNode = goodEdges[j][-1]
-                    NodesInPath.append(goodEdges[j][0])
-                    visited[j] = 1
-
-        print("path ", i, " ", NodesInPath)
-        for j in range(1, len(NodesInPath)):
-            currNode = NodesInPath[j]
-            if(currNode != -1):
-                for k in range(0, len(nodeCount)):
-                    if(currNode in nodeCount[k]):
-                        time = discreteTimeWindows[k][nodeCount[k].index(
-                            currNode)]
-                        print("Customer :", (k+1), " Time :", time,
-                              "     valid time window", timeWindows[k])
-                        break
-
-        print()
-
-    return 0
-
-
 def main():
     customers = 2
 

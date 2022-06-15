@@ -205,97 +205,7 @@ def main():
         edgesList.append([])
     print("Edges List:", edgesList)
 
-    
-    for i in range(len(discreteTimeWindows)):
-        tu = nodeCount[i][-1]
-        start_utime = discreteTimeWindows[i][0]
-        end_utime = discreteTimeWindows[i][-1]
-
-        # stores edges reachable from u
-        for k in range(0, len(discreteTimeWindows)):
-            sv = nodeCount[k][0]
-
-            start_vtime = discreteTimeWindows[k][0]
-            end_vtime = discreteTimeWindows[k][-1]
-
-           
-            if(i != k and start_utime + timeMatrix[i][k] > end_vtime):
-                print("customer",i,"to",k,"start_utime ",start_utime," end_utime ",end_utime," start_vtime",start_vtime," end_vtime",end_vtime)
-               
-                  # not reachable
-
-            elif(i != k and start_vtime > end_utime + timeMatrix[i][k]):
-                # edge bw (u,tu) -> (v,sv)
-                print("customer",i,"to",k,"start_utime ",start_utime," end_utime ",end_utime," start_vtime",start_vtime," end_vtime",end_vtime)
-                e = []
-                x[edgeNumber] = solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
-                edges['x[%i]' % edgeNumber] = (tu, sv)  # u -> v reachable
-                edgeFlows[edgeNumber] = (tu, sv)
-                print(tu, "->", sv)
-                e.append(edgeNumber)
-                edgesList[tu].extend(e)
-                edgeNumber += 1
-                
-
-            elif(i != k and start_vtime == end_utime + timeMatrix[i][k]):
-                print("customer",i,"to",k,"start_utime ",start_utime," end_utime ",end_utime," start_vtime",start_vtime," end_vtime",end_vtime)
-                e = []
-                x[edgeNumber] = solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
-                edges['x[%i]' % edgeNumber] = (tu, sv)  # u -> v reachable
-                print(tu, "->", sv)
-                edgeFlows[edgeNumber] = (tu, sv)
-                e.append(edgeNumber)
-                edgesList[tu].extend(e)
-                edgeNumber += 1
-                
-
-            elif (i != k and start_vtimefor i in range(len(discreteTimeWindows)):
-        tu = nodeCount[i][-1]
-        start_utime = discreteTimeWindows[i][0]
-        end_utime = discreteTimeWindows[i][-1]
-
-        # stores edges reachable from u
-        for k in range(0, len(discreteTimeWindows)):
-            sv = nodeCount[k][0]
-
-            start_vtime = discreteTimeWindows[k][0]
-            end_vtime = discreteTimeWindows[k][-1]
-
-           
-            if(i != k and start_utime + timeMatrix[i][k] > end_vtime):
-                print("customer",i,"to",k,"start_utime ",start_utime," end_utime ",end_utime," start_vtime",start_vtime," end_vtime",end_vtime)
-               
-                  # not reachable
-
-            elif(i != k and start_vtime > end_utime + timeMatrix[i][k]):
-                # edge bw (u,tu) -> (v, < end_utime + timeMatrix[i][k]):
-                print("ishit bajpai")
-                firstReachableNode_index = 0  # first such that node >= sv
-                for j in range(0, len(discreteTimeWindows[i])):
-                    if(timeMatrix[i][k] + discreteTimeWindows[i][j] >= start_vtime):
-                        firstReachableNode_index = j
-                        break
-                # now starting from firstReachableNode make edges until feasible
-                for l in range(firstReachableNode_index, len(discreteTimeWindows[i])):
-                    e = []
-                    reachingTime = discreteTimeWindows[i][l]+timeMatrix[i][k]
-                    for r in range(0, len(discreteTimeWindows[k])):
-                        if(discreteTimeWindows[k][r] >= reachingTime):
-                            print(edgesList[nodeCount[i][l]])
-                            print(nodeCount[i][l], "->", nodeCount[k][r])
-                            # edge bw these two
-                            x[edgeNumber] = solver.NumVar(
-                                0, 1, 'x[%i]' % edgeNumber)
-                            edges['x[%i]' % edgeNumber] = (
-                                nodeCount[i][l], nodeCount[k][r])  # u -> v reachable
-                            edgeFlows[edgeNumber] = (
-                                nodeCount[i][l], nodeCount[k][r])
-
-                            e.append(edgeNumber)
-                            edgesList[nodeCount[i][l]].extend(e)
-                            print("hdhdh", edgesList[nodeCount[i][l]])
-                            edgeNumber += 1
-                            break
+                      
                 
     # print("edgelist")
     # for i in range(0,len(discreteTimeWindows)):
@@ -319,94 +229,76 @@ def main():
     # print(len(edgesList))
     # print("edgeslist[15]",edgesList[15])
     # count=0;
-    # for i in range(0,len(discreteTimeWindows)):
-    #     # for j in range(0,len(discreteTimeWindows[i])): 
-    #         for k in range(0,len(discreteTimeWindows)):
-    #             # for l in range(len(discreteTimeWindows[k])-1,-1,-1): # l th node
-    #             #     v = nodeCount[k][l]
-    #             #     vtime = discreteTimeWindows[k][l]
-    #                 # print(utime,vtime)
-    #                 # # print('time from',u,'to',v,'is',timeMatrix[i][k])
-    #                 # print()
+    count=0;
+    for i in range(0,len(discreteTimeWindows)):
+        # for j in range(0,len(discreteTimeWindows[i])): 
+            for k in range(0,len(discreteTimeWindows)):
+                # for l in range(len(discreteTimeWindows[k])-1,-1,-1): # l th node
+                #     v = nodeCount[k][l]
+                #     vtime = discreteTimeWindows[k][l]
+                    # print(utime,vtime)
+                    # # print('time from',u,'to',v,'is',timeMatrix[i][k])
+                    # print()
                 
                 
                         
-    #             if (i!=k and discreteTimeWindows[i][len(discreteTimeWindows[i])-1]+timeMatrix[i][k]<discreteTimeWindows[k][0]):
-    #                     print("1")
-    #                     u = nodeCount[i][len(discreteTimeWindows[i])-1]
-    #                     v=nodeCount[k][0]
-    #                     x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
-    #                     edges['x[%i]' % edgeNumber] = (u,v) # u -> v reachable
-    #                     edgeFlows[edgeNumber] = (u,v)
-    #                     # edgesList[int(count+len(discreteTimeWindows[i]))].append(edgeNumber)
-    #                     edgesList[u].append(edgeNumber)
-    #                     edgeNumber += 1
-    #             elif(i!=k and discreteTimeWindows[i][len(discreteTimeWindows[i])-1]+timeMatrix[i][k]==discreteTimeWindows[k][0]):
-    #                     print("2")
-    #                     u = nodeCount[i][len(discreteTimeWindows[i])-1]
-    #                     v=nodeCount[k][0]
-    #                     x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
-    #                     edges['x[%i]' % edgeNumber] = (u,v) # u -> v reachable
-    #                     edgeFlows[edgeNumber] = (u,v)
-    #                     # edgesList[int(count+len(discreteTimeWindows[i]))].append(edgeNumber)
-    #                     edgesList[u].append(edgeNumber)
-    #                     edgeNumber += 1
-    #             elif(i!=k and (discreteTimeWindows[k][0]-timeMatrix[i][k])<=discreteTimeWindows[i][len(discreteTimeWindows[i])-1] and (discreteTimeWindows[k][0]-timeMatrix[i][k])>=discreteTimeWindows[i][0] ):
-    #                     intime= (discreteTimeWindows[k][0]-timeMatrix[i][k])
-    #                     print(intime)
-    #                     print(intime-discreteTimeWindows[i][0])
-    #                     n=0
-    #                     print("time window (i) :", discreteTimeWindows[i])
-    #                     print("time window (j):", discreteTimeWindows[k])
-    #                     for m in range(int((intime-discreteTimeWindows[i][0])/10),len(discreteTimeWindows[i])):
-    #                         if(n<len(discreteTimeWindows[k])-1):
-    #                             print("m:",m)
-    #                             print(n)
-    #                             u = nodeCount[i][m]
-    #                             # u = nodeCount[i][int(intime-discreteTimeWindows[i][0])]
-    #                             v=nodeCount[k][n]
-    #                             x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
-    #                             edges['x[%i]' % edgeNumber] = (u,v) # u -> v reachable
-    #                             edgeFlows[edgeNumber] = (u,v)
-    #                             # print(count+intime-discreteTimeWindows[i][0])
-    #                             # edgesList[int(count+intime-discreteTimeWindows[i][0])].append(edgeNumber)
-    #                             edgesList[u].append(edgeNumber)
-    #                             # edgesList[int(count+m)].append(edgeNumber)
-    #                             edgeNumber += 1
-    #                             n=n+1
-    #         count=count+len(discreteTimeWindows[i])
-    #         print(count)
-            
-    # i=0
-    # for j in range(len(edgesList)):
-    #     if(len(edgesList[j])>1):
-    #         i=1+i
-    # print(i)
-# 
-    # for i in range(0,len(discreteTimeWindows)):
-    #     for j in range(0,len(discreteTimeWindows[i])):    # j th node
-    #         u = nodeCount[i][j]
-    #         utime = discreteTimeWindows[i][j]
-    #         e = []  # stores edges reachable from u
-    #         e.append(edgeNumber)
-    #         edgeNumber += 1
-    #         for k in range(0,len(discreteTimeWindows)):
-    #             for l in range(len(discreteTimeWindows[k])-1,-1,-1): # l th node
-    #                 v = nodeCount[k][l]
-    #                 vtime = discreteTimeWindows[k][l]
-    #                 # print(utime,vtime)
-    #                 # # print('time from',u,'to',v,'is',timeMatrix[i][k])
-    #                 # print()
-    #                 if(i!=k and utime+timeMatrix[i][k]==vtime):
-                       
-    #                     x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
-    #                     edges['x[%i]' % edgeNumber] = (u,v) # u -> v reachable
-    #                     edgeFlows[edgeNumber] = (u,v)
-    #                     e.append(edgeNumber)
-    #                     edgeNumber += 1
-    #                 elif (utime+timeMatrix[i][k]>vtime):
-    #                     break
-    #         edgesList.append(e)
+                if (i!=k and discreteTimeWindows[i][-1]+timeMatrix[i][k]<discreteTimeWindows[k][0]):
+                        print("1")
+                        e=[]
+                        u = nodeCount[i][-1]
+                        v=nodeCount[k][0]
+                        x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
+                        edges['x[%i]' % edgeNumber] = (u,v) # u -> v reachable
+                        edgeFlows[edgeNumber] = (u,v)
+                        e.append(edgeNumber)
+                        # edgesList[int(count+len(discreteTimeWindows[i]))].append(edgeNumber)
+                        edgesList[u].extend(e)
+                        edgeNumber += 1
+                elif(i!=k and discreteTimeWindows[i][-1]+timeMatrix[i][k]==discreteTimeWindows[k][0]):
+                        print("2")
+                        e=[]
+                        u = nodeCount[i][-1]
+                        v=nodeCount[k][0]
+                        x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
+                        edges['x[%i]' % edgeNumber] = (u,v) # u -> v reachable
+                        edgeFlows[edgeNumber] = (u,v)
+                        e.append(edgeNumber)
+                        # edgesList[int(count+len(discreteTimeWindows[i]))].append(edgeNumber)
+                        edgesList[u].extend(e)
+                        edgeNumber += 1
+                elif(i!=k and (discreteTimeWindows[k][0]-timeMatrix[i][k])<=discreteTimeWindows[i][len(discreteTimeWindows[i])-1] and (discreteTimeWindows[k][0]-timeMatrix[i][k])>=discreteTimeWindows[i][0] ):
+               [nodeCount[i][l]].extend(e)
+               
+                        intime= (discreteTimeWindows[k][0]-timeMatrix[i][k])
+                        # print(intime)
+                        # print(intime-discreteTimeWindows[i][0])
+                        
+                        n=0
+                        
+                        # print("time window (i) :", discreteTimeWindows[i])
+                        # print("time window (j):", discreteTimeWindows[k])
+                        for m in range(int((intime-discreteTimeWindows[i][0])/10),len(discreteTimeWindows[i])):
+                            if(n<len(discreteTimeWindows[k])-1):
+                                # print("m:",m)
+                                # print(n)
+                                e=[]
+                                u = nodeCount[i][m]
+                                # u = nodeCount[i][int(intime-discreteTimeWindows[i][0])]
+                                v=nodeCount[k][n]
+                                x[edgeNumber] =  solver.NumVar(0, 1, 'x[%i]' % edgeNumber)
+                                edges['x[%i]' % edgeNumber] = (u,v) # u -> v reachable
+                                edgeFlows[edgeNumber] = (u,v)
+                                # print(count+intime-discreteTimeWindows[i][0])
+                                # edgesList[int(count+intime-discreteTimeWindows[i][0])].append(edgeNumber)
+                                e.append(edgeNumber)
+                                edgesList[u].extend(e)
+                                # edgesList[int(count+m)].append(edgeNumber)
+                                edgeNumber += 1
+                                n=n+1
+                                print(e)
+            count=count+len(discreteTimeWindows[i])
+       
+    
     
     # print('edge list b4 s t',edgesList)
     print()
